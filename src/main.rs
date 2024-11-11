@@ -1,10 +1,11 @@
 use std::env;
 use std::fs;
+use std::process;
 
 fn check_args(v: Option<&String>) -> &String  {
-    match v {
-        Some(v) => println!(""),
-        None => panic!("minigrep requires both search string and file path as arguments"),
+    if let None = v {
+        println!("minigrep requires two arguments, a search query and the file path");
+        process::exit(1);
     }
     v.unwrap()  //return the unwrapped String ref
 }
