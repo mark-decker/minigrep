@@ -4,6 +4,7 @@ use std::{fs, error::Error};
 pub struct Config {
     pub query: String,
     pub file_path: String,
+    pub ignore_case: bool,
 }
 
 impl Config {
@@ -19,6 +20,7 @@ impl Config {
         return Ok(Config {
             query ,
             file_path,
+            ignore_case: true,
         })
     }
 }
@@ -26,8 +28,9 @@ impl Config {
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
     let file_contents = fs::read_to_string(config.file_path)?;  //will return the error for caller
-                                                                       //to handle
-    let results = search(&config.query, &file_contents);
+                                                                //to handle
+
+    let results = search(&config.query, &file_contents, &config.ignore_case);
 
     for found in results {
         println!("{found}");
@@ -37,16 +40,27 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
 }
 
-pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+pub fn search<'a>(query: &str, contents: &'a str, ignore_case: &bool) -> Vec<&'a str> {
 
     let mut results = Vec::new();
 
-    for line in contents.split("\n") {
-        if line.contains(&query) {
-            results.push(line);
+    if *ignore_case {
+        let lower_query = query.to_lowercase();
+
+        for line in contents.split("\n") {
+            if line.to_lowercase().contains(&lower_query) {
+                results.push(line);
+            }
+        }
+    } else {
+        for line in contents.split("\n") {
+            if line.contains(&query) {
+                results.push(line);
+            } 
         }
     }
 
     return results
 }
+
 
