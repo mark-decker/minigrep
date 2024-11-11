@@ -3,7 +3,7 @@
 //Learning project by Mark Decker
 //11/11/2024
 //
-use std::{env, fs, process};
+use std::{env, fs, process, error::Error};
 
 struct Config {
     query: String,
@@ -38,17 +38,20 @@ fn main() {
     //Parse the input arguments
     let config = parse_args(&args[..]);  //pass the slice not of the whole vec
 
-    //Verify file exists before attempting to read it
-    if !fs::exists(config.file_path.clone()).unwrap() {
-        println!("The file {} does not exist",config.file_path);
+    if let Err(e) = run(config) {
+        println!("Runtime error: {e}");
         process::exit(2);
     }
+}
 
-    let file_contents = fs::read_to_string(config.file_path)
-        .expect("Should have been able to read the file");
+fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
+    let file_contents = fs::read_to_string(config.file_path)?;  //will return the error for caller
+                                                                //to handle
     println!("With text:\n{file_contents}");
 
     println!("The query is {}",config.query);
+
+    Ok(())  //return Ok result type 
 
 }
