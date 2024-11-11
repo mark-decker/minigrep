@@ -25,26 +25,28 @@ impl Config {
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
-    let file_contents = fs::read_to_string(config.file_path.clone())?;  //will return the error for caller
+    let file_contents = fs::read_to_string(config.file_path)?;  //will return the error for caller
                                                                        //to handle
-    //the entire file contents is in the string
-    //split into a vector with each line as an str in the vector
-    let file_lines: Vec<&str> = file_contents.split("\n").collect();
+    let results = search(&config.query, &file_contents);
 
-    //iterator over each line looking for the query
-    let mut found: bool = false;
-    for line in file_lines {
-        if line.contains(config.query.as_str()) {
-            println!("{}",line);
-            found = true;
-        }
-    }
-
-    if !found {
-        println!("{} is not present in {}",config.query, config.file_path);
+    for found in results {
+        println!("{found}");
     }
 
     Ok(())  //return Ok result type
 
+}
+
+pub fn search<'a>(query: &str, contents: &'a str) -> Vec<&'a str> {
+
+    let mut results = Vec::new();
+
+    for line in contents.split("\n") {
+        if line.contains(&query) {
+            results.push(line);
+        }
+    }
+
+    return results
 }
 
