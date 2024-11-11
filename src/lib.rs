@@ -1,5 +1,5 @@
 //refactor minigrep to use this library file
-use std::{fs, error::Error};
+use std::{fs, error::Error, env};
 
 pub struct Config {
     pub query: String,
@@ -17,10 +17,12 @@ impl Config {
         let query = args[1].clone();  //use clone and return error to let caller handle them
         let file_path = args[2].clone();
 
+        let ignore_case = env::var("IGNORE_CASE").is_ok();
+
         return Ok(Config {
             query ,
             file_path,
-            ignore_case: true,
+            ignore_case,
         })
     }
 }
