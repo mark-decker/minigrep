@@ -1,6 +1,4 @@
-use std::env;
-use std::fs;
-use std::process;
+use std::{env, fs, process};
 
 fn check_args(v: Option<&String>) -> &String  {
     if let None = v {
