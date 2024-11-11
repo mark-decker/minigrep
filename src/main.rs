@@ -46,11 +46,26 @@ fn main() {
 
 fn run(config: Config) -> Result<(), Box<dyn Error>> {
 
-    let file_contents = fs::read_to_string(config.file_path)?;  //will return the error for caller
-                                                                //to handle
-    println!("With text:\n{file_contents}");
+    let file_contents = fs::read_to_string(config.file_path.clone())?;  //will return the error for caller
+                                                                       //to handle
+                                                                       //clone so we can refer to
+                                                                       //file_path later
+    //the entire file contents is in the string
+    //split into a vector with each line as an str in the vector
+    let file_lines: Vec<&str> = file_contents.split("\n").collect();
 
-    println!("The query is {}",config.query);
+    //iterator over each line looking for the query
+    let mut found: bool = false;
+    for line in file_lines {
+        if line.contains(config.query.as_str()) {
+            println!("{}",line);
+            found = true;
+        }
+    }
+
+    if !found {
+        println!("{} is not present in {}",config.query, config.file_path);
+    }
 
     Ok(())  //return Ok result type 
 
